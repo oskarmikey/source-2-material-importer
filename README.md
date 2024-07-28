@@ -12,7 +12,7 @@ Installation
 **1 Clone the Repository**
 Open your terminal or command prompt and clone the repository to your local machine:
 
-		git clone https://github.com/oskarmikey/Vmt-to-Vmat-converter-with-Gui.git
+	git clone https://github.com/oskarmikey/Vmt-to-Vmat-converter-with-Gui.git
 
 **2 Navigate to the Script Directory**
 Change to the directory containing the script:

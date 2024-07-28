@@ -67,8 +67,9 @@ For questions or issues, please open an issue on the GitHub repository or contac
 actually don't i made all of this from a template cause im tired of dealing with this crap for two days. ima probably change the name of the repo and purpose of it later anyway to include more parts of the proces of converting source 1 stuff to source 2 cause im tired of crapy ones and cant find good ones
 		
 
-
-
+i almost forgot
+BIG CREDITS TO https://github.com/AlpyneDreams/source2utils/blob/master/utils/vmt_to_vmat.py
+christe i had mamny isues with the first way i trid to make the script until i took a look at how they did it.
 
 
 

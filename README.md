@@ -4,7 +4,8 @@ This script converts .vmt files (Valve Material Type) to .vmat files (Valve Mate
 It automates the conversion of materials to a format compatible with Source 2 tools.
 
 # Prerequisites
- ***Python 3.x***: Ensure you have Python 3.x installed on your system. You can download it from python.org.
+ ***Python 3.x***: Ensure you have Python 3.x installed on your system. You can 
+ download it from python.org.
 Required Python Libraries: The script uses standard Python libraries. No additional installations are required unless specified otherwise.
 Installation
 1 Clone the Repository

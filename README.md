@@ -4,7 +4,7 @@
 
 **Overview**
 
-**VMT2VMATPro** is a versatile tool designed to convert `.vmt` files (Valve Material Type) to `.vmat` files (Valve Material Asset) and generate roughness maps from texture files. It is ideal for automating the conversion of materials to a format compatible with Source 2 tools, with the added capability of processing texture files for roughness mapping.
+**vmt to vmat enhanced** is a versatile tool designed to convert `.vmt` files (Valve Material Type) to `.vmat` files (Valve Material Asset) and generate roughness maps from texture files. It is ideal for automating the conversion of materials to a format compatible with Source 2 tools, with the added capability of processing texture files for roughness mapping.
 
 **Prerequisites**
 
@@ -26,7 +26,7 @@ Open your terminal or command prompt and clone the repository to your local mach
 
 Change to the directory containing the script:
 
-		cd vmt2vmatpro
+		cd source2_vmt_material_converter
 
 **Usage**
 
@@ -34,7 +34,7 @@ Change to the directory containing the script:
 
 The primary method of using **VMT2VMATPro** is through its graphical user interface (GUI). Run the script using:
 
-		python vmt2vmatpro.py
+		python source2_vmt_material_converter.py
 
 **GUI Instructions**
 

@@ -1,4 +1,4 @@
-# VMT2VMATPro - Enhanced GUI Conversion Tool
+# vmt to vmat enhanced GUI - Enhanced GUI Conversion Tool
 
 **Warning:** This is an active project, and the current version may still be under development. Some functionalities or instructions might not be up-to-date or may change in future updates.
 
@@ -20,7 +20,7 @@
 
 Open your terminal or command prompt and clone the repository to your local machine:
 
-		git clone [https://github.com/your-username/vmt2vmatpro.git](https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/blob/main/source2_vmt_material_converter.py)
+		git clone https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/blob/main/source2_vmt_material_converter.py
 
 **2. Navigate to the Script Directory**
 
@@ -73,7 +73,7 @@ This script is licensed under the MIT License.
 
 **Contact**
 
-For questions or issues, please open an issue on the [GitHub repository](https://github.com/your-username/vmt2vmatpro/issues) or contact the repository maintainer.
+For questions or issues, please open an issue on the [GitHub repository](https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/issues) or contact the repository maintainer.
 
 **Credits**
 

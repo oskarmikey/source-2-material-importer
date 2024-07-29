@@ -1,82 +1,80 @@
-# DONT USE I AM MAKEING A NEW TOOL THAT DOES THIS AND MORE
+# VMT2VMATPro - Enhanced GUI Conversion Tool
 
-Warning this is not the final version this is a version that will be worked on all the things down belov may not be correct or upright work and might be from a older version 
+**Warning:** This is an active project, and the current version may still be under development. Some functionalities or instructions might not be up-to-date or may change in future updates.
 
-# How to Use
-***Overview***
-This script converts .vmt files (Valve Material Type) to .vmat files (Valve Material Asset) and optionally processes .vtf files (Valve Texture Format) for use in Source 2 engine environments. 
-It automates the conversion of materials to a format compatible with Source 2 tools.
+**Overview**
 
-# Prerequisites	
- ***Python 3.x***: Ensure you have Python 3.x installed on your system. You can download it from python.org.
+**VMT2VMATPro** is a versatile tool designed to convert `.vmt` files (Valve Material Type) to `.vmat` files (Valve Material Asset) and generate roughness maps from texture files. It is ideal for automating the conversion of materials to a format compatible with Source 2 tools, with the added capability of processing texture files for roughness mapping.
 
-***Required Python Libraries***: The script uses standard Python libraries. No additional installations are required unless specified otherwise.
-Installation
+**Prerequisites**
 
-**1 Clone the Repository**
+- **Python 3.x:** Ensure you have Python 3.x installed on your system. You can download it from python.org.
+
+- **Required Python Libraries:** This script uses the standard Python libraries and the `Pillow` library for image processing. You can install Pillow using:
+
+		pip install pillow
+
+**Installation**
+
+**1. Clone the Repository**
+
 Open your terminal or command prompt and clone the repository to your local machine:
 
-	git clone https://github.com/oskarmikey/Vmt-to-Vmat-converter-with-Gui.git
+		git clone https://github.com/your-username/vmt2vmatpro.git
 
-**2 Navigate to the Script Directory**
+**2. Navigate to the Script Directory**
+
 Change to the directory containing the script:
 
-	 cd your repository
-# Usage
-Command-Line Interface
-The script can be executed from the command line with the following syntax:
+		cd vmt2vmatpro
 
-	python sourcce2_material_converter.py [options]
+**Usage**
 
-## **Options**
-##### --input-dir <directory>: Specify the directory containing .vmt and .vtf files to be converted. The script will process all files in this directory.
-	python sourcce2_material_converter.py --input-dir path/to/input
+**Graphical User Interface (GUI)**
 
-##### --output-dir <directory>: Specify the directory where the converted .vmat files will be saved. If not provided, the converted files will be saved in the same directory as the input files.
-	python sourcce2_material_converter.py --input-dir path/to/input --output-dir path/to/output
+The primary method of using **VMT2VMATPro** is through its graphical user interface (GUI). Run the script using:
 
-##### --verbose: Enable verbose logging to see detailed output and debugging information.
-	python sourcce2_material_converter.py --input-dir path/to/input --verbose
+		python vmt2vmatpro.py
 
+**GUI Instructions**
 
-### **Example**
-To convert all .vmt files in the materials directory and save the output to the converted_materials directory, use:
+1. **Material Directory:** Specify the directory containing `.vmt` files and textures.
+2. **Backup Directory:** Set a directory where original `.vmt` files will be backed up.
+3. **Texture Format:** Choose the texture format for conversion (e.g., `tga`, `png`, `jpg`, `dds`, `bmp`).
+4. **Overwrite Options:** Select whether to overwrite existing `.vmat` files and texture files.
+5. **Generate Roughness Maps:** Check this option to generate roughness maps along with the conversion.
+6. **Darkness Value:** Adjust the darkness value for the roughness map generation.
 
-	python sourcce2_material_converter.py --input-dir materials --output-dir converted_materials
+Click **Convert** to start the process. The progress will be displayed on the GUI.
 
-### File Structure
-Input Directory: Place your .vmt and .vtf files here.
-Output Directory: Converted .vmat files will be saved here.
-Notes
+**Example**
 
-The script assumes that all .vmt files have corresponding .vtf files in the same directory. 
+To convert all `.vmt` files and generate roughness maps, simply follow the instructions on the GUI. The tool will handle the rest, including logging the progress and handling any issues.
 
-Ensure that texture files are present for accurate conversion.
-If a .vmt file does not have an associated .vtf file, the script will log a warning but continue processing other files.
+**File Structure**
 
+- **Input Directory:** Place your `.vmt` files and texture files here.
+- **Backup Directory:** Backups of the original `.vmt` files will be saved here.
+- **Output Directory:** Converted `.vmat` files and generated roughness maps will be saved here.
 
+**Notes**
 
-## Troubleshooting
-***File Not Found Errors***: Ensure that the input directory path is correct and that it contains .vmt and .vtf files.
+- Ensure that all `.vmt` files have corresponding texture files for accurate conversion.
+- If a `.vmt` file does not have an associated texture file, the script will log a warning but continue processing other files.
 
-***Permission Issues***: Ensure you have the necessary read/write permissions for the directories involved.
+**Troubleshooting**
 
-i aint ading more shait here
+- **File Not Found Errors:** Verify that the input directory path is correct and contains the necessary files.
+- **Permission Issues:** Ensure you have the appropriate read/write permissions for the directories involved.
 
-## License
+**License**
+
 This script is licensed under the MIT License.
 
-## Contact
-For questions or issues, please open an issue on the GitHub repository or contact the repository maintainer. 
-actually don't i made all of this from a template cause im tired of dealing with this crap for two days. ima probably change the name of the repo and purpose of it later anyway to include more parts of the proces of converting source 1 stuff to source 2 cause im tired of crapy ones and cant find good ones
-		
+**Contact**
 
-i almost forgot
-BIG CREDITS TO https://github.com/AlpyneDreams/source2utils/blob/master/utils/vmt_to_vmat.py
-christe i had mamny isues with the first way i trid to make the script until i took a look at how they did it.
+For questions or issues, please open an issue on the [GitHub repository](https://github.com/your-username/vmt2vmatpro/issues) or contact the repository maintainer.
 
+**Credits**
 
-
-
-
-
+**BIG CREDITS TO** [AlpyneDreams](https://github.com/AlpyneDreams/source2utils/blob/master/utils/vmt_to_vmat.py) for the foundational work on VMT to VMAT conversion. Their implementation was instrumental in developing this tool.

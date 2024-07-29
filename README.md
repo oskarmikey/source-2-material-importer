@@ -20,7 +20,7 @@
 
 Open your terminal or command prompt and clone the repository to your local machine:
 
-		git clone https://github.com/your-username/vmt2vmatpro.git
+		git clone [https://github.com/your-username/vmt2vmatpro.git](https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/blob/main/source2_vmt_material_converter.py)
 
 **2. Navigate to the Script Directory**
 

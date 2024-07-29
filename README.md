@@ -1,3 +1,6 @@
+
+Warning this is not the final version this is a version that will be worked on all the things down belov may not be correct or upright work and might be from a older version 
+
 # How to Use
 ***Overview***
 This script converts .vmt files (Valve Material Type) to .vmat files (Valve Material Asset) and optionally processes .vtf files (Valve Texture Format) for use in Source 2 engine environments. 

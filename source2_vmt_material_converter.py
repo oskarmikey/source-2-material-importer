@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2024 John Doe
+# Copyright (c) 2024 OSKARMICKEY
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#I have no idea to write upp here
-# This version is heavaly shait 
-# Mostly because ive used ai
-# oh this uses a big part of  https://github.com/AlpyneDreams/source2utils/blob/master/utils/vmt_to_vmat.py
-# because ai is stobid and tries to do it a way that won't work so i "used" it to force chat bpt
-# to work with the base of the github repo i linked.
-#
-#HOW TO USE
-#
-#
-#
+
 
 import os
 import shutil

@@ -20,13 +20,13 @@
 
 Open your terminal or command prompt and clone the repository to your local machine:
 
-		git clone https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/blob/main/source2_vmt_material_converter.py
+	git clone https://github.com/oskarmikey/vmt-to-vmat-enhanced-GUI/blob/main/source2_vmt_material_converter.py
 
 **2. Navigate to the Script Directory**
 
 Change to the directory containing the script:
 
-		cd source2_vmt_material_converter
+	cd source2_vmt_material_converter
 
 **Usage**
 
@@ -34,7 +34,7 @@ Change to the directory containing the script:
 
 The primary method of using **VMT2VMATPro** is through its graphical user interface (GUI). Run the script using:
 
-		python source2_vmt_material_converter.py
+	python source2_vmt_material_converter.py
 
 **GUI Instructions**
 

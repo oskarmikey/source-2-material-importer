@@ -1,3 +1,4 @@
+# DONT USE I AM MAKEING A NEW TOOL THAT DOES THIS AND MORE
 
 Warning this is not the final version this is a version that will be worked on all the things down belov may not be correct or upright work and might be from a older version 
 

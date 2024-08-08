@@ -34,11 +34,11 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import multiprocessing
 import sys
 import psutil
-from queue import Queue
+from queue import Queue, Empty
 
 # Constants
 LOG_FILE = "conversion_log.txt"
-DEFAULT_CONCURRENT_THREADS = min(4, multiprocessing.cpu_count())
+DEFAULT_CONCURRENT_THREADS = min(6, multiprocessing.cpu_count())
 OO_SQRT_3 = 0.57735025882720947
 BUMP_BASIS_TRANSPOSE = [
     [0.81649661064147949, -0.40824833512306213, -0.40824833512306213],
@@ -147,50 +147,53 @@ def copy_with_retry(src, dst, retries=5, delay=0.05):
         time.sleep(delay)
     return False
 
-def move_with_retry(src, dst, retries=5, delay=0.05):
-    for attempt in range(retries):
-        try:
-            shutil.move(src, dst)
-            log_info(f"Moved file from {src} to {dst}")
+def copy_to_backup_and_delete(src, backup_folder, base_path):
+    try:
+        relative_path = os.path.relpath(src, base_path)
+        backup_path = os.path.join(backup_folder, relative_path)
+        os.makedirs(os.path.dirname(backup_path), exist_ok=True)
+        if copy_with_retry(src, backup_path):
+            os.remove(src)
+            log_info(f"Copied and deleted file from {src} to {backup_path}")
             return True
-        except (PermissionError, FileNotFoundError) as e:
-            log_warning(f"Attempt {attempt + 1} failed to move {src} to {dst}: {e}")
-            if attempt < retries - 1:
-                time.sleep(delay)
-            else:
-                log_error(f"Failed to move {src} to {dst} after {retries} attempts: {e}")
-                return False
+        else:
+            log_error(f"Failed to copy file to backup: {src}")
+            return False
+    except Exception as e:
+        log_error(f"Error copying file to backup and deleting {src}: {e}")
+        return False
 
 def convert_ssbump_to_normal_and_height(ssbump_path, output_format='png'):
     try:
         log_info(f"Converting ssbump map to normal and height maps for: {ssbump_path}")
-        img = Image.open(ssbump_path)
-        width, height = img.size
-        pixels = np.array(img)
-        normal_image = Image.new('RGB', (width, height))
-        normal_pixels = np.array(normal_image)
+        img = Image.open(ssbump_path).convert('RGB')
+        pixels = np.asarray(img).astype(np.float32) / 255.0
 
-        height_image = Image.new('L', (width, height))
-        height_pixels = np.array(height_image)
+        width, height = img.size
+
+        normal_image = np.zeros((height, width, 3), dtype=np.float32)
+        height_image = np.zeros((height, width), dtype=np.float32)
 
         for y in range(height):
             for x in range(width):
-                pixel = pixels[y, x][:3] / 255.0
-                pixel_vector = np.array([pixel[0], pixel[1], pixel[2]])
-                normal_pixels[y, x, 0] = min(255, max(0, int(((np.dot(pixel_vector, BUMP_BASIS_TRANSPOSE[0]) * 0.55) + 0.5) * 255)))
-                normal_pixels[y, x, 1] = min(255, max(0, int(((np.dot(pixel_vector, BUMP_BASIS_TRANSPOSE[1]) * 0.55) + 0.5) * 255)))
-                normal_pixels[y, x, 2] = min(255, max(0, int(((np.dot(pixel_vector, BUMP_BASIS_TRANSPOSE[2]) * 0.55) + 0.5) * 255)))
-                height_pixels[y, x] = int(255 * (1 - pixel[0]))  # Use red channel for height
+                pixel = pixels[y, x]
+                normal_image[y, x, 0] = np.dot(pixel, BUMP_BASIS_TRANSPOSE[0]) * 0.5 + 0.5
+                normal_image[y, x, 1] = np.dot(pixel, BUMP_BASIS_TRANSPOSE[1]) * 0.5 + 0.5
+                normal_image[y, x, 2] = np.dot(pixel, BUMP_BASIS_TRANSPOSE[2]) * 0.5 + 0.5
+                height_image[y, x] = 1.0 - pixel[0]
 
-        normal_image = Image.fromarray(normal_pixels)
-        height_image = Image.fromarray(height_pixels)
+        normal_image = (normal_image * 255).astype(np.uint8)
+        height_image = (height_image * 255).astype(np.uint8)
+
+        normal_img = Image.fromarray(normal_image, 'RGB')
+        height_img = Image.fromarray(height_image, 'L')
 
         base_name, _ = os.path.splitext(ssbump_path)
         normal_map_path = f"{base_name.replace('-ssbump', '').replace('_height', '')}_normal.{output_format}"
         height_map_path = f"{base_name.replace('-ssbump', '').replace('_height', '')}_height.{output_format}"
 
-        normal_image.save(normal_map_path)
-        height_image.save(height_map_path)
+        normal_img.save(normal_map_path)
+        height_img.save(height_map_path)
 
         log_info(f"Generated normal map: {normal_map_path}")
         log_info(f"Generated height map: {height_map_path}")
@@ -200,7 +203,7 @@ def convert_ssbump_to_normal_and_height(ssbump_path, output_format='png'):
         log_error(f"Error converting ssbump to normal and height: {e}")
         return None, None
 
-def convert_vmt_to_vmat(vmt_file, base_path, backup_folder, texture_format, generate_height, generate_normal):
+def convert_vmt_to_vmat(vmt_file, base_path, texture_format, generate_height, generate_normal):
     parameters = parse_vmt_file(vmt_file)
     log_info(f"Processing VMT file: {vmt_file}")
 
@@ -210,14 +213,6 @@ def convert_vmt_to_vmat(vmt_file, base_path, backup_folder, texture_format, gene
     roughness_texture_name = f"{base_texture_name}_roughness.{texture_format}"
     parameters['$roughness'] = roughness_texture_name
 
-    vmat_file = vmt_file.replace('.vmt', '.vmat')
-    vmat_file_export = os.path.join(base_path, vmat_file)
-
-    backup_vmt_dir = os.path.join(backup_folder, os.path.relpath(vmt_file, start=base_path))
-    os.makedirs(os.path.dirname(backup_vmt_dir), exist_ok=True)
-    if not move_with_retry(vmt_file, backup_vmt_dir):
-        return
-
     normal_map_path = None
     height_map_path = None
 
@@ -226,10 +221,9 @@ def convert_vmt_to_vmat(vmt_file, base_path, backup_folder, texture_format, gene
         if bumpmap_file_path:
             log_info(f"Converting ssbump map to normal and height maps for: {bumpmap_texture_name}")
             normal_map_path, height_map_path = convert_ssbump_to_normal_and_height(bumpmap_file_path, texture_format)
-            if normal_map_path:
-                backup_ssbump_dir = os.path.join(backup_folder, os.path.relpath(bumpmap_file_path, start=base_path))
-                os.makedirs(os.path.dirname(backup_ssbump_dir), exist_ok=True)
-                move_with_retry(bumpmap_file_path, backup_ssbump_dir)
+
+    vmat_file = vmt_file.replace('.vmt', '.vmat')
+    vmat_file_export = os.path.join(base_path, vmat_file)
 
     try:
         with open(vmat_file_export, "w") as file:
@@ -339,10 +333,14 @@ def adjust_roughness_for_shiny_surfaces(directory, texture_format):
                 except Exception as e:
                     log_error(f"Error adjusting roughness map {file_name}: {e}")
 
-def worker_thread(queue, base_path, backup_folder, texture_format, overwrite_tga, generate_normal, generate_height, generate_roughness, darkness_value, retry_list):
+def worker_thread(queue, base_path, backup_folder, texture_format, overwrite_tga, generate_normal, generate_height, generate_roughness, darkness_value, retry_list, progress_lock, progress_count):
     thread_name = threading.current_thread().name
     while not queue.empty():
-        vmt_file_name = queue.get()
+        try:
+            vmt_file_name = queue.get_nowait()
+        except Empty:
+            break
+
         if cancel_event.is_set():
             log_info(f"[{thread_name}] Cancelled processing.")
             break
@@ -356,36 +354,49 @@ def worker_thread(queue, base_path, backup_folder, texture_format, overwrite_tga
             parameters = parse_vmt_file(vmt_file_name)
 
             base_texture_name = parameters.get('$basetexture', '').replace('"', '')
-            texture_file = find_texture_file(base_texture_name, base_path, texture_format)
+            bumpmap_texture_name = parameters.get('$bumpmap', '').replace('"', '')
+            bumpmap_file_path = find_texture_file(bumpmap_texture_name, base_path, texture_format) if bumpmap_texture_name else None
 
-            if texture_file:
-                log_info(f"[{thread_name}] Found texture file for '{base_texture_name}': {texture_file}")
-                convert_vmt_to_vmat(vmt_file_name, base_path, backup_folder, texture_format, generate_height, generate_normal)
-                if overwrite_tga:
-                    texture_file_export = os.path.join(base_path, f"{base_texture_name}.{texture_format}")
-                    os.makedirs(os.path.dirname(texture_file_export), exist_ok=True)
-                    if not copy_with_retry(texture_file, texture_file_export):
-                        raise Exception(f"Failed to copy texture file: {texture_file}")
+            # Convert ssbump to normal and height maps
+            normal_map_path, height_map_path = None, None
+            if bumpmap_file_path and "-ssbump" in bumpmap_texture_name:
+                normal_map_path, height_map_path = convert_ssbump_to_normal_and_height(bumpmap_file_path, texture_format)
+
+            # Generate VMAT file
+            vmat_file = convert_vmt_to_vmat(vmt_file_name, base_path, texture_format, generate_height, generate_normal)
+
+            # Generate roughness maps
+            if generate_roughness:
+                generate_roughness_maps(base_path, texture_format, darkness_value)
+                adjust_roughness_for_shiny_surfaces(base_path, texture_format)
+
+            # Copy original VMT and bumpmap files to backup folder and delete original files
+            if copy_to_backup_and_delete(vmt_file_name, backup_folder, base_path):
+                log_info(f"Copied and deleted VMT file to backup: {vmt_file_name}")
             else:
-                log_warning(f"[{thread_name}] Texture file for '{base_texture_name}' not found.")
+                log_error(f"Failed to copy VMT file to backup: {vmt_file_name}")
+
+            if bumpmap_file_path:
+                if copy_to_backup_and_delete(bumpmap_file_path, backup_folder, base_path):
+                    log_info(f"Copied and deleted ssbump file to backup: {bumpmap_file_path}")
+                else:
+                    log_error(f"Failed to copy ssbump file to backup: {bumpmap_file_path}")
+
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            if elapsed_time > 5:  # Arbitrary threshold for "long processing time"
+                log_info(f"[{thread_name}] Warning: Processing of {os.path.basename(vmt_file_name)} took {elapsed_time:.2f} seconds")
+
+            with progress_lock:
+                progress_count[0] += 1
+                print(f"Progress count: {progress_count[0]}")  # Print progress count to the console
+                progress_label.config(text=f"Processed {progress_count[0]}/{total_vmt_files}")
+                progress_bar['value'] = (progress_count[0] / total_vmt_files) * 100
+                progress_label.update_idletasks()
+
         except Exception as e:
             log_error(f"[{thread_name}] Error processing VMT file {vmt_file_name}: {e}")
             retry_list.append(vmt_file_name)
-
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        if elapsed_time > 5:  # Arbitrary threshold for "long processing time"
-            log_info(f"[{thread_name}] Warning: Processing of {os.path.basename(vmt_file_name)} took {elapsed_time:.2f} seconds")
-
-    if generate_roughness:
-        try:
-            generate_roughness_maps(base_path, texture_format, darkness_value)
-            adjust_roughness_for_shiny_surfaces(base_path, texture_format)
-        except Exception as e:
-            log_error(f"[{thread_name}] Error generating roughness maps: {e}")
-
-    with progress_lock:
-        progress_count[0] += 1
 
 def estimate_time(total, processed, start_time):
     elapsed_time = time.time() - start_time
@@ -397,11 +408,11 @@ def estimate_time(total, processed, start_time):
     return f"{int(minutes)}m {int(seconds)}s remaining"
 
 def main(target_folder, backup_folder, texture_format, overwrite_vmat, overwrite_tga, generate_normal, generate_height, generate_roughness, darkness_value):
-    global progress_count, total_vmt_files, progress_lock, progress_label, progress_complete, start_time
+    global progress_count, total_vmt_files, progress_label, progress_complete, start_time
+    global cancel_event, pause_event
 
     log_file = os.path.join(target_folder, LOG_FILE)
     progress_count = [0]
-    progress_lock = threading.Lock()
     progress_complete = False
     retry_list = []
 
@@ -427,14 +438,17 @@ def main(target_folder, backup_folder, texture_format, overwrite_vmat, overwrite
     start_time = time.time()
 
     with ThreadPoolExecutor(max_workers=DEFAULT_CONCURRENT_THREADS) as executor:
-        futures = [executor.submit(worker_thread, queue, target_folder, backup_folder, texture_format, overwrite_tga, generate_normal, generate_height, generate_roughness, darkness_value, retry_list) for _ in range(DEFAULT_CONCURRENT_THREADS)]
+        futures = [
+            executor.submit(
+                worker_thread, queue, target_folder, backup_folder, texture_format, overwrite_tga, generate_normal, generate_height, generate_roughness, darkness_value, retry_list, threading.Lock(), progress_count
+            ) for _ in range(DEFAULT_CONCURRENT_THREADS)
+        ]
         for future in as_completed(futures):
             future.result()
-            with progress_lock:
+            with threading.Lock():
                 current_progress = progress_count[0]
                 progress_label.config(text=f"Processed {current_progress}/{total_vmt_files} - {estimate_time(total_vmt_files, current_progress, start_time)}")
-                if current_progress % 50 == 0:  # Update every 50 processed files
-                    progress_label.config(text=f"Processed {current_progress}/{total_vmt_files} - {estimate_time(total_vmt_files, current_progress, start_time)}")
+                progress_label.update_idletasks()
 
     # Retry failed files
     if retry_list:
@@ -446,6 +460,7 @@ def main(target_folder, backup_folder, texture_format, overwrite_vmat, overwrite
 
     progress_complete = True
     progress_label.config(text=f"Processed {progress_count[0]}/{total_vmt_files} - Completed!")
+    progress_bar['value'] = 100
     messagebox.showinfo("Process Completed", "The conversion from VMT to VMAT has been successfully completed!")
 
 def browse_source_folder():
@@ -603,7 +618,7 @@ cancel_button.grid(row=9, column=1, pady=10)
 # Progress label and bar
 progress_label = tk.Label(root, text="Progress: 0%")
 progress_label.grid(row=10, column=0, columnspan=2, padx=10, pady=5, sticky=tk.W)
-progress_bar = ttk.Progressbar(root, mode='indeterminate')
+progress_bar = ttk.Progressbar(root, mode='determinate')
 progress_bar.grid(row=11, column=0, columnspan=3, padx=10, pady=5, sticky=tk.W+tk.E)
 
 root.mainloop()

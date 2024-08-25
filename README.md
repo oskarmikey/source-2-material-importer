@@ -1,6 +1,6 @@
 # vmt to vmat enhanced GUI - Enhanced GUI Conversion Tool
 
-# EXTREAM WARNING Im remaking this becasue if i remeber correctly this one doesn't work properly but i pushed away.
+# EXTREAM WARNING Im remaking this becasue if i remeber correctly this one doesn't work properly but i pushed away. allso i mainly have made this for tf2
 
 
 **Warning:** This is an active project, and the current version may still be under development. Some functionalities or instructions might not be up-to-date or may change in future updates.

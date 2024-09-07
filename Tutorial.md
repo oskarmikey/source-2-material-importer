@@ -1,4 +1,3 @@
-markdown_content = """
 # How I Converted Source 1 Maps to Source 2 for TF2 (and How You Can Too)
 
 If you're like me and wanted to convert Source 1 maps and textures to Source 2, it's possible, but it took a bit of figuring out. Here's exactly how I managed it step by step, so you can do it too.

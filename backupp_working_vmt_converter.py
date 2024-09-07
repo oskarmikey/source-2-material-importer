@@ -184,5 +184,5 @@ def convert_vmt_folder(input_dir):
                         generate_roughness_map(base_texture_path, base_texture_path)
 
 # Example usage:
-input_directory = r"D:\Game moding\vmt_converter_test\materials"  # Replace with your input directory
+input_directory = r"C:\*********\materials"  # Replace with your input directory
 convert_vmt_folder(input_directory)

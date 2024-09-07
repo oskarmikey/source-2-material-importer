@@ -14,9 +14,9 @@ from PIL import Image, ImageOps
 import numpy as np
 
 # Directories
-base_materials_dir = 'D:/Game moding/vmt_converter_test/texture test/materials/'
-output_texture_dir = 'D:/Game moding/vmt_converter_test/converted_textures/'
-vmat_output_dir = 'D:/Game moding/vmt_converter_test/vmat_files/'
+base_materials_dir = 'C:/Desktop/vmt_converter_test/texture test/materials/'
+output_texture_dir = 'C:/Desktop/vmt_converter_test/converted_textures/'
+vmat_output_dir = 'C:/Desktop/vmt_converter_test/vmat_files/'
 
 # Ensure directories exist
 os.makedirs(output_texture_dir, exist_ok=True)

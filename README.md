@@ -1,4 +1,4 @@
-# vmt to vmat enhanced GUI - Enhanced GUI Conversion Tool
+# vmt to vmat enhanced GUI - With GUI interface
 
 * EXTREAM WARNING Im remaking this becasue if i remeber correctly this one doesn't work properly but i pushed away. allso i mainly have made this for tf2*
 

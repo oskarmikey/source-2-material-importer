@@ -193,7 +193,7 @@ def convert_vmt_folder(input_dir):
     print("All VMT files have been processed successfully.")
 
 def main():
-    input_directory = r"D:\Game moding\vmt_converter_test\Big_bertha_convertion\materials"  # Replace with your input directory
+    input_directory = r"C:\desktop\vmt_converter_test\Big_bertha_convertion\materials"  # Replace with your input directory
     convert_vmt_folder(input_directory)
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # vmt to vmat enhanced GUI - With GUI interface
 
-* EXTREAM WARNING Im remaking this becasue if i remeber correctly this one doesn't work properly but i pushed away. allso i mainly have made this for tf2*
+* EXTREAM WARNING Im remaking this becasue if i remeber correctly this one doesn't work properly but i pushed away. allso i mainly have made this for tf2 and if you find anything you want to change do a pull request*
 
 
 **Warning:** This is an active project, and the current version may still be under development. Some functionalities or instructions might not be up-to-date or may change in future updates.
